@@ -1,58 +1,30 @@
 import { type CollectionEntry, getCollection } from "astro:content";
-
-import { locales } from "@/config/siteSettings.json";
-import { filterCollectionByLanguage, removeLocaleFromSlug } from "@/js/localeUtils";
 import { slugify } from "@/js/textUtils";
 
 // --------------------------------------------------------
 /**
- * * get all blog posts in a formatted array
- * @param lang: string (optional) - language to filter by (matching a locale in i18nUtils.ts)
- * @returns all blog posts, filtered for drafts, sorted by date, future posts removed, locale removed from slug, and filtered by language if passed
+ * * Get all blog posts in a formatted array
+ * @returns all blog posts, filtered for drafts, future posts removed, and sorted by date
  *
- * ## Examples
- *
- * ### If not using i18n features
+ * Example:
  * ```ts
  * const posts = await getAllPosts();
  * ```
- *
- * ### If using i18n features
- * ```ts
- * const posts = await getAllPosts("en");
- * ```
- * or
- * ```ts
- * const currentLocale = getLocaleFromUrl(Astro.url);
- * const posts = await getAllPosts(currentLocale);
- * ```
  */
-export async function getAllPosts(
-	lang?: (typeof locales)[number],
-): Promise<CollectionEntry<"blog">[]> {
+export async function getAllPosts(): Promise<CollectionEntry<"blog">[]> {
 	const posts = await getCollection("blog", ({ data }) => {
 		// filter out draft posts
 		return data.draft !== true;
 	});
 
-	// if a language is passed, filter the posts by that language
-	let filteredPosts: CollectionEntry<"blog">[];
-	if (lang) {
-		// console.log("filtering by language", lang);
-		filteredPosts = filterCollectionByLanguage(posts, lang) as CollectionEntry<"blog">[];
-		// filteredPosts = posts;
-	} else {
-		// console.log("no language passed, returning all posts");
-		filteredPosts = posts;
-	}
+	const filteredPosts = posts;
 
 	// filter out future posts and sort by date
-	const formattedPosts = formatPosts(filteredPosts, {
-		filterOutFuturePosts: true,
-		sortByDate: true,
-		limit: undefined,
-		removeLocale: true,
-	});
+    const formattedPosts = formatPosts(filteredPosts, {
+        filterOutFuturePosts: true,
+        sortByDate: true,
+        limit: undefined,
+    });
 
 	return formattedPosts;
 }
@@ -68,20 +40,18 @@ export async function getAllPosts(
  * @returns formatted blog posts according to passed parameters
  */
 interface FormatPostsOptions {
-	filterOutFuturePosts?: boolean;
-	sortByDate?: boolean;
-	limit?: number;
-	removeLocale?: boolean;
+    filterOutFuturePosts?: boolean;
+    sortByDate?: boolean;
+    limit?: number;
 }
 
 export function formatPosts(
-	posts: CollectionEntry<"blog">[],
-	{
-		filterOutFuturePosts = true,
-		sortByDate = true,
-		limit = undefined,
-		removeLocale = true,
-	}: FormatPostsOptions = {},
+    posts: CollectionEntry<"blog">[],
+    {
+        filterOutFuturePosts = true,
+        sortByDate = true,
+        limit = undefined,
+    }: FormatPostsOptions = {},
 ): CollectionEntry<"blog">[] {
 	const filteredPosts = posts.reduce((acc: CollectionEntry<"blog">[], post) => {
 		const { pubDate } = post.data;
@@ -106,13 +76,7 @@ export function formatPosts(
 		filteredPosts.sort(() => Math.random() - 0.5);
 	}
 
-	// remove locale from URL
-	if (removeLocale) {
-		filteredPosts.forEach((post) => {
-			// console.log("removing locale from slug for post", post.id);
-			post.id = removeLocaleFromSlug(post.id);
-		});
-	}
+    // no locale prefixes in URLs
 
 	// limit if number is passed
 	if (typeof limit === "number") {

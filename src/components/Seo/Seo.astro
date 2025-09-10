@@ -4,13 +4,7 @@ import { type CollectionEntry } from "astro:content";
 import { SEO } from "astro-seo";
 
 import jsonLDGenerator from "@/js/jsonLD";
-import { getLocaleFromUrl } from "@/js/localeUtils";
-import { getTranslatedData } from "@/js/translationUtils";
-
-import HrefLang from "./HrefLang.astro";
-
-const currLocale = getLocaleFromUrl(Astro.url);
-const siteData = getTranslatedData("siteData", currLocale);
+import siteData from "@/config/siteData.json";
 
 interface BaseProps {
 	title: string;
@@ -113,8 +107,7 @@ const imageUrl =
 	nofollow={noindex}
 />
 
-<!-- hreflang attributes -->
-<HrefLang />
+<!-- hreflang alternates not used -->
 
 <!-- JSON LD -->
 <Fragment set:html={jsonLD} />

@@ -13,30 +13,24 @@ import "./testimonialSwiper.css"; // have to define custom styles like this
 // components
 import TestimonialCard from "./TestimonialCard.astro";
 
-// utils
-import { getLocaleFromUrl } from "@js/localeUtils";
-import { getTranslatedData } from "@js/translationUtils";
 
-// data
-const currLocale = getLocaleFromUrl(Astro.url);
-const testimonialData = getTranslatedData("testimonialData", currLocale);
+interface TestimonialItem {
+  avatar?: ImageMetadata;
+  name: string;
+  title?: string;
+  testimonial: string;
+}
+
+interface Props { title?: string; items?: TestimonialItem[] }
+const { title = "Our customers love us", items } = Astro.props as Props;
+const testimonialData: TestimonialItem[] = items && items.length ? items : [];
 ---
 
 <section id="faq2" class="bg-base-200/50 py-20 md:my-16">
 	<div class="site-container">
-		<div class="flex justify-center">
-			<h2 class="h2 flex gap-1 text-center">
-				<span>Our customers love</span>
-				<span>
-					<Icon
-						name="stellar/freehand-heart"
-						class="text-primary-500 h-8 w-auto"
-						aria-hidden="true"
-					/>
-				</span>
-				<span>us</span>
-			</h2>
-		</div>
+    <div class="flex justify-center">
+        <h2 class="h2 flex gap-1 text-center">{title}</h2>
+    </div>
 
 		<div class="mt-10 overflow-hidden pb-10">
 			<!-- swiper -->
@@ -47,7 +41,7 @@ const testimonialData = getTranslatedData("testimonialData", currLocale);
 					{
 						testimonialData.map((testimonial, idx) => (
 							<div class="swiper-slide">
-								<TestimonialCard {...testimonial} />
+                        <TestimonialCard avatar={testimonial.avatar} name={testimonial.name} title={testimonial.title || ""} testimonial={testimonial.testimonial} />
 							</div>
 						))
 					}

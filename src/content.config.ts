@@ -22,11 +22,9 @@ const blogCollection = defineCollection({
 				.transform((str) => (str ? new Date(str) : undefined)),
 			heroImage: image(),
 			categories: z.array(z.string()),
-			// mappingKey allows you to match entries across languages for SEO purposes
-			mappingKey: z.string().optional(),
-			// blog posts will be excluded from build if draft is "true"
-			draft: z.boolean().optional(),
-		}),
+            // blog posts will be excluded from build if draft is "true"
+            draft: z.boolean().optional(),
+        }),
 });
 
 // authors
@@ -49,25 +47,38 @@ const servicesCollection = defineCollection({
 		z.object({
 			title: z.string(),
 			description: z.string(),
-			image: image(),
-			// mappingKey allows you to match entries across languages for SEO purposes
-			mappingKey: z.string().optional(),
-			// services will be excluded from build if draft is "true"
-			draft: z.boolean().optional(),
-		}),
+            image: image(),
+            // services will be excluded from build if draft is "true"
+            draft: z.boolean().optional(),
+        }),
 });
 
 // other pages
 const otherPagesCollection = defineCollection({
-	loader: glob({ pattern: "**/[^_]*{md,mdx}", base: "./src/data/otherPages" }),
-	schema: () =>
-		z.object({
-			title: z.string(),
-			description: z.string(),
-			// mappingKey allows you to match entries across languages for SEO purposes
-			mappingKey: z.string().optional(),
-			draft: z.boolean().optional(),
-		}),
+    loader: glob({ pattern: "**/[^_]*{md,mdx}", base: "./src/data/otherPages" }),
+    schema: () =>
+        z.object({
+            title: z.string(),
+            description: z.string(),
+            builder: z
+                .array(
+                    z.object({
+                        discriminant: z.enum([
+                            'hero',
+                            'servicesSideImage',
+                            'featureCardsSmall',
+                            'testimonialsSwiper',
+                            'featureLightboxMarquee',
+                            'ctaCardCenter',
+                            'faqAccordions',
+                            'team',
+                        ] as const),
+                        value: z.unknown().optional(),
+                    }),
+                )
+                .optional(),
+            draft: z.boolean().optional(),
+        }),
 });
 
 export const collections = {
@@ -75,4 +86,18 @@ export const collections = {
 	authors: authorsCollection,
 	services: servicesCollection,
 	otherPages: otherPagesCollection,
+	testimonials: defineCollection({
+		loader: glob({ pattern: "**/[^_]*{md,mdx}", base: "./src/data/testimonials" }),
+		schema: ({ image }) =>
+			z.object({
+				name: z.string(),
+				title: z.string().optional(),
+				company: z.string().optional(),
+				quote: z.string(),
+				image: image().optional(),
+				link: z.string().optional(),
+				featured: z.boolean().optional(),
+				tags: z.array(z.string()).optional(),
+			}),
+	}),
 };

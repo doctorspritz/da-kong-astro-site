@@ -14,42 +14,38 @@ import image2 from "@images/living-room.jpg";
 import image3 from "@images/paint-swatches.jpg";
 
 interface ServiceItem {
-	image: ImageMetadata; // an imported image
-	title: string;
-	details: string;
-	href: string; // link to learn more
+    image: ImageMetadata; // an imported image
+    title: string;
+    details: string;
+    href: string; // link to learn more
 }
 
-// data
-const serviceData: ServiceItem[] = [
+// default data (fallback)
+const defaultServiceData: ServiceItem[] = [
 	{
 		image: image1,
-		title: "Exterior Painting",
-		details: `Professional home exterior painting, including siding, doors, and trim.
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex nesciunt quia quibusdam, 
-    voluptatem aliquid autem, magnam, doloremque voluptatibus odio esse pariatur harum 
-    odit neque qui earum nam praesentium sint ullam!`,
+		title: "Component Sourcing",
+		details: `We source high-quality components from trusted suppliers to ensure the best possible quality for your products.`,
 		href: "/services/exterior-painting/",
 	},
 	{
 		image: image2,
-		title: "Interior Painting",
-		details: `Our experienced staff can paint your home's interior, including walls, ceilings, and trim.
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex nesciunt quia quibusdam, voluptatem 
-    aliquid autem, magnam, doloremque voluptatibus odio esse pariatur harum odit neque qui earum 
-    nam praesentium sint ullam!`,
+		title: "Custom Kits",
+		details: `We can create custom kits to meet your specific needs.`,
 		href: "/services/interior-painting/",
 	},
 	{
 		image: image3,
-		title: "Deck and Fence Staining",
-		details: `Stain your deck or fence to keep it looking great and protected from the elements.
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex nesciunt quia quibusdam, 
-    voluptatem aliquid autem, magnam, doloremque voluptatibus odio esse pariatur harum odit neque 
-    qui earum nam praesentium sint ullam!`,
+		title: "Product Development",
+		details: `We can help you develop your product from concept to production.`,
 		href: "/services/deck-and-fence-staining/",
 	},
 ];
+
+interface Props { title?: string; items?: ServiceItem[] }
+const { title = "Our Services", items } = Astro.props as Props;
+
+const serviceData: ServiceItem[] = items && items.length ? items : defaultServiceData;
 ---
 
 <section id="services-side-image" class="overflow-hidden py-12">
@@ -63,7 +59,7 @@ const serviceData: ServiceItem[] = [
 						aria-hidden="true"
 					/>
 				</div>
-				Our <span class="text-primary-600">professional</span> painting services
+				{title}
 			</h2>
 		</div>
 		<div class="mt-10 flex flex-col gap-16 md:mt-16 md:gap-24">

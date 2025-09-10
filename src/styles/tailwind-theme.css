@@ -4,20 +4,91 @@
  * These are in a separate file so it can be imported into <style> tags in .astro components
  */
 @theme {
-	/* primary colors. Can generate with https://uicolors.app/create, then convert to oklch with https://oklch.com/ */
-	--color-primary-50: var(--color-orange-50);
-	--color-primary-100: var(--color-orange-100);
-	--color-primary-200: var(--color-orange-200);
-	--color-primary-300: var(--color-orange-300);
-	--color-primary-400: var(--color-orange-400);
-	--color-primary-500: var(--color-orange-500);
-	--color-primary-600: var(--color-orange-600);
-	--color-primary-700: var(--color-orange-700);
-	--color-primary-800: var(--color-orange-800);
-	--color-primary-900: var(--color-orange-900);
-	--color-primary-950: var(--color-orange-950);
+	/*
+	 * Custom palette based on provided OKLCH values
+	 * Example format: oklch(<lightness%> <chroma> <hue>)
+	 */
+	--pale-yellow-50: oklch(99.62% 0.004 106.47);
+	--pale-yellow-100: oklch(99.02% 0.004 106.47);
+	--pale-yellow-200: oklch(96.28% 0.007 106.52);
+	--pale-yellow-300: oklch(92.96% 0.007 106.53);
+	--pale-yellow-600: oklch(88.28% 0.012 106.65);
+	--pale-yellow-800: oklch(68.98% 0.027 109.55);
+	--pale-teal-100: oklch(96.95% 0.014 196.93);
+	--pale-cyan-50: oklch(53.31% 0.006 247.94);
+	--pale-cyan-150: oklch(34.26% 0.003 197.03);
+	--pale-cyan-200: oklch(30.32% 0.003 197.01);
+	--pale-cyan-300: oklch(24.57% 0.003 196.96);
+	--pale-cyan-400: oklch(21.67% 0.002 197.04);
+	--pale-blue-100: oklch(36.61% 0.003 228.87);
+	--pale-blue-200: oklch(30.39% 0.04 213.68);
+	--red-100: oklch(53.47% 0.151 25.99);
+	--red-200: oklch(51.83% 0.168 21.78);
+	--hydra-150: oklch(94.94% 0.033 208.37);
+	--hydra-350: oklch(71.92% 0.112 205.51);
+	--hydra-450: oklch(55.27% 0.086 208.61);
+	--hydra-550: oklch(39.71% 0.062 207.67);
+	--astra-450: oklch(77.92% 0.012 71.87);
+	--astra-750: oklch(27.99% 0.014 76.29);
+	--astra-800: oklch(20.19% 0.011 80.54);
+	--umbra-150: oklch(84.32% 0.008 207.14);
+	--umbra-250: oklch(70.09% 0.007 197);
+	--umbra-350: oklch(58.21% 0.006 196.99);
+	--terra-150: oklch(91.23% 0.05 48.15);
+	--terra-350: oklch(70.73% 0.133 38.31);
+	--terra-450: oklch(52.75% 0.13 37.37);
+	--terra-550: oklch(43.01% 0.108 37.17);
+	--jenova-150: oklch(93.28% 0.038 357.01);
+	--jenova-250: oklch(84.44% 0.092 0.32);
+	--jenova-450: oklch(49.39% 0.109 9.38);
+	--jenova-550: oklch(34.35% 0.079 9.21);
+	--rosa-150: oklch(88.55% 0.06 28.44);
+	--rosa-350: oklch(68.18% 0.207 22.93);
+	--rosa-450: oklch(51.72% 0.199 21.85);
+	--rosa-550: oklch(39.55% 0.16 22.99);
+	--costa-150: oklch(93.76% 0.048 72.24);
+	--costa-300: oklch(80.62% 0.151 67.71);
+	--costa-350: oklch(73.83% 0.169 62.71);
+	--costa-400: oklch(65.87% 0.163 54.96);
+	--costa-500: oklch(51.37% 0.155 42.1);
+	--altana-150: oklch(95% 0.083 95.76);
+	--altana-350: oklch(80.51% 0.151 81.42);
+	--altana-400: oklch(71.97% 0.149 81.37);
+	--altana-450: oklch(61.87% 0.129 77.72);
+	--altana-500: oklch(51.11% 0.109 73.59);
+	--dalmasca-150: oklch(95.74% 0.076 97.14);
+	--dalmasca-300: oklch(83.9% 0.132 96.6);
+	--dalmasca-400: oklch(69.87% 0.123 97.59);
+	--dalmasca-550: oklch(47.82% 0.091 97.9);
+	--gridania-150: oklch(95.46% 0.037 105.4);
+	--gridania-350: oklch(75.63% 0.107 109.92);
+	--gridania-450: oklch(60.17% 0.065 108.2);
+	--gridania-550: oklch(42.28% 0.047 108.27);
+	--limsa-150: oklch(94.36% 0.042 217.16);
+	--limsa-350: oklch(73.11% 0.113 232.51);
+	--limsa-450: oklch(53.86% 0.101 231.01);
+	--limsa-550: oklch(36.01% 0.071 232.13);
+	--kuja-150: oklch(94.87% 0.046 325.93);
+	--kuja-350: oklch(72.5% 0.119 316.63);
+	--kuja-450: oklch(54.3% 0.097 316.69);
+	--kuja-550: oklch(38% 0.079 316.84);
 
-	/* base colors */
+	/*
+	 * Map Tailwind primary scale to the Hydra tones
+	 */
+	--color-primary-50: var(--hydra-150);
+	--color-primary-100: var(--hydra-150);
+	--color-primary-200: var(--hydra-350);
+	--color-primary-300: var(--hydra-350);
+	--color-primary-400: var(--hydra-450);
+	--color-primary-500: var(--hydra-450);
+	--color-primary-600: var(--hydra-550);
+	--color-primary-700: var(--hydra-550);
+	--color-primary-800: var(--hydra-550);
+	--color-primary-900: var(--hydra-550);
+	--color-primary-950: var(--hydra-550);
+
+	/* base colors (keep existing neutral scale for readability for now) */
 	--color-base-50: var(--color-neutral-50);
 	--color-base-100: var(--color-neutral-100);
 	--color-base-200: var(--color-neutral-200);

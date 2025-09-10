@@ -1,4 +1,4 @@
-import { locales, localeMap } from "@/config/siteSettings.json";
+// helpers
 
 /**
  * * returns "slugified" text.
@@ -50,20 +50,13 @@ export function categorify(text: string): string {
 /**
  * * returns a nicely formatted string of the date passed
  * @param date: string | number | Date - date to format
- * @param locale: string - locale to format the date in
  * @returns string - formatted date
  */
-export function formatDate(date: string | number | Date, locale: (typeof locales)[number]): string {
-	let localeString = "en-US";
-
-	if (locales.includes(locale)) {
-		localeString = localeMap[locale];
-	}
-
-	return new Date(date).toLocaleDateString(localeString, {
-		timeZone: "UTC",
-		year: "numeric",
-		month: "short",
-		day: "numeric",
-	});
+export function formatDate(date: string | number | Date): string {
+    return new Date(date).toLocaleDateString('en-US', {
+        timeZone: "UTC",
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+    });
 }

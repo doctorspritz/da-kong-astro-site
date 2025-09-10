@@ -8,10 +8,7 @@ import CategoryCloud from "@components/CategoryCloud/CategoryCloud.astro";
 
 // utils
 import { getAllPosts } from "@js/blogUtils";
-import { getLocaleFromUrl } from "@js/localeUtils";
-
-const currLocale = getLocaleFromUrl(Astro.url);
-const posts = await getAllPosts(currLocale);
+const posts = await getAllPosts();
 ---
 
 <BaseLayout

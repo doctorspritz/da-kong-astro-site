@@ -1,5 +1,4 @@
 ---
-import { getLocalizedRoute } from "@/js/translationUtils";
 
 // components
 import FooterLink from "@components/Footer/FooterLink.astro";
@@ -8,12 +7,9 @@ import Button from "@components/Button/Button.astro";
 import SocialIcon from "@components/SocialIcon/SocialIcon.astro";
 
 // utils
-import { getLocaleFromUrl } from "@js/localeUtils";
-import { getTranslatedData } from "@js/translationUtils";
+import siteData from "@/config/siteData.json";
 
 // data
-const currLocale = getLocaleFromUrl(Astro.url);
-const siteData = getTranslatedData("siteData", currLocale);
 
 const today = new Date();
 ---

@@ -1,23 +1,17 @@
 import rss from "@astrojs/rss";
-import { getLocalizedRoute } from "@/js/translationUtils";
 import { getCollection, type CollectionEntry } from "astro:content";
 
 // utils
 import { getAllPosts } from "@js/blogUtils";
-import { defaultLocale } from "@config/siteSettings.json";
-import { getTranslatedData } from "@js/translationUtils";
+import siteData from "@/config/siteData.json";
 
 // data
-const siteData = getTranslatedData("siteData", defaultLocale);
-
-// you can switch the RSS locale here to something else if desired
-const rssLocale = defaultLocale;
 
 // this is needed for getAuthorName() and getAuthorEmail() below
 const authors: CollectionEntry<"authors">[] = await getCollection("authors");
 
 export async function GET(context) {
-	const posts = await getAllPosts(rssLocale);
+    const posts = await getAllPosts();
 
 	// TODO: (maybe?) handle multiple authors instead of just putting the first author's data
 	return rss({
@@ -58,7 +52,7 @@ export async function GET(context) {
 
 			// Compute RSS link from post `slug`
 			// This example assumes all posts are rendered as `/blog/[slug]` routes
-			link: getLocalizedRoute(rssLocale, `/blog/${post.id}/`),
+            link: `/blog/${post.id}/`,
 		})),
 	});
 }

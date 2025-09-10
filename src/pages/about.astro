@@ -1,63 +1,126 @@
 ---
-/**
- * * About page with various sections including some text, team profiles, and CTA
- * Edit the team member information inside src/config/teamData.json.ts
- */
-import { getLocalizedRoute } from "@/js/translationUtils";
-import { Icon } from "astro-icon/components";
-
-// main layout
+import { type CollectionEntry, getCollection, render } from "astro:content";
 import BaseLayout from "@layouts/BaseLayout.astro";
-
-// components
 import Profile from "@components/Profile/Profile.astro";
 import CtaCardCenter from "@components/Cta/CtaCardCenter.astro";
+import Hero from "@components/Hero/HeroBgImage.astro";
+import FeatureCardsSmall from "@components/Feature/FeatureCardsSmall.astro";
+import ServicesSideImage from "@components/Services/ServicesSideImage.astro";
+import TestimonialsSwiper from "@components/Testimonials/TestimonialsSwiper.astro";
+import FeatureLightboxMarquee from "@components/Feature/FeatureLightboxMarquee.astro";
+import FaqAccordions from "@components/Faq/FaqAccordions.astro";
+import teamData from "@/config/teamData.json";
 
-// utils
-import { getLocaleFromUrl } from "@js/localeUtils";
-import { getTranslatedData } from "@js/translationUtils";
+// Load About content
+const pages: CollectionEntry<"otherPages">[] = await getCollection("otherPages");
+const aboutPage = pages.find((p) => p.id === "about" || p.id.endsWith("/about") || p.id.endsWith("/about/index"));
+if (!aboutPage) {
+  throw new Error("About page content not found");
+}
+const { Content } = await render(aboutPage);
+const { title, description } = aboutPage.data;
+const builder = (aboutPage.data as any).builder as
+  | { discriminant: string; value?: Record<string, any> }[]
+  | undefined;
 
-// data
-const currLocale = getLocaleFromUrl(Astro.url);
-const teamData = getTranslatedData("teamData", currLocale);
+// Precompute async data for services block
+const allServices = await getCollection('services');
+const allTestimonials = await getCollection('testimonials');
+const preparedBlocks = (builder ?? []).map((b) => {
+  const v = (b as any).value || {};
+  if (b.discriminant === 'servicesSideImage') {
+    const selected = Array.isArray(v.services) ? v.services : [];
+    const items = selected
+      .map((card: any) => {
+        const slug = typeof card === 'string' ? card : (card?.service as string);
+        const svc = allServices.find((s) => s.id === slug || s.id.endsWith(`/${slug}`));
+        if (!svc) return null;
+        const baseSlug = (svc as any).id.split('/').pop();
+        return {
+          title: (card as any).titleOverride || (svc as any).data.title,
+          details: (card as any).descriptionOverride || (svc as any).data.description,
+          image: (card as any).imageOverride || (svc as any).data.image,
+          href: (card as any).hrefOverride || `/services/${baseSlug}/`,
+        };
+      })
+      .filter(Boolean) as Array<{ title: string; details: string; image: any; href: string }>
+    return { kind: 'servicesSideImage' as const, v, items };
+  }
+  if (b.discriminant === 'testimonials') {
+    const items = Array.isArray(v.items) ? v.items : [];
+    const mapped = items
+      .map((card: any) => {
+        const slug = typeof card === 'string' ? card : (card?.testimonial as string);
+        const t = allTestimonials.find((x) => x.id === slug || x.id.endsWith(`/${slug}`));
+        if (!t) return null;
+        return {
+          name: card.nameOverride || (t as any).data.name,
+          title: card.titleOverride || (t as any).data.title,
+          testimonial: card.quoteOverride || (t as any).data.quote,
+          avatar: card.imageOverride || (t as any).data.image,
+        };
+      })
+      .filter(Boolean) as Array<{ name: string; title?: string; testimonial: string; avatar?: any }>;
+    return { kind: 'testimonials' as const, v, items: mapped };
+  }
+  return { kind: b.discriminant as any, v } as const;
+});
 ---
 
-<BaseLayout title="Contact Me" description="Get in touch! Contact information for Blogsmith.">
-	<!-- text section -->
-	<section class="site-container mx-auto pt-36 md:pt-44">
-		<h1 class="h1 text-center">
-			We have
-			<span class="relative whitespace-nowrap">
-				one goal
-				<span>
-					<Icon
-						name="stellar/freehand-zig-underline"
-						class="text-primary-300 absolute top-0 left-0 -z-10 h-full w-full translate-y-[60%] scale-y-75"
-						aria-hidden="true"
-					/>
-				</span>
-			</span>
-		</h1>
-		<p class="description mx-auto mt-10 max-w-2xl text-center md:mt-20">
-			Since 1990 we have been providing the best painting services in the area. We are a family
-			owned and operated business that takes pride in our work and our community. We are fully
-			licensed and insured and have a long list of references available upon request. We look
-			forward to working with you!
-		</p>
-	</section>
-
-	<!-- meet the team -->
-	<section class="site-container mt-24 md:mt-36">
-		<h2 class="h2 text-center">
-			Meet the <span class="text-primary-600">team</span>
-		</h2>
-		<div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-			{
-				teamData.map((member) => (
-					<Profile name={member.name} title={member.title} image={member.image} bio={member.bio} />
-				))
-			}
-		</div>
-	</section>
-	<CtaCardCenter />
+<BaseLayout title={title} description={description}>
+  {
+    (preparedBlocks.length ? preparedBlocks : [
+      { discriminant: 'hero' },
+      { discriminant: 'team' },
+      { discriminant: 'ctaCardCenter' },
+    ]).map((b) => {
+      const kind = (b as any).kind ?? (b as any).discriminant;
+      const v = (b as any).v ?? (b as any).value ?? {};
+      switch (kind) {
+        case 'hero':
+          return (
+            <Hero
+              heading={v.heading}
+              subheading={v.subheading}
+              ctaPrimaryText={v.ctaPrimaryText}
+              ctaPrimaryHref={v.ctaPrimaryHref}
+              ctaSecondaryText={v.ctaSecondaryText}
+              ctaSecondaryHref={v.ctaSecondaryHref}
+            />
+          );
+        case 'servicesSideImage':
+          return <ServicesSideImage title={v.title} items={(b as any).items} />;
+        case 'featureCardsSmall':
+          return <FeatureCardsSmall title={v.title} items={v.items} />;
+        case 'testimonialsSwiper':
+          return <TestimonialsSwiper />;
+        case 'featureLightboxMarquee':
+          return <FeatureLightboxMarquee />;
+        case 'ctaCardCenter':
+          return (
+            <CtaCardCenter
+              heading={v.heading}
+              description={v.description}
+              ctaText={v.ctaText}
+              ctaHref={v.ctaHref}
+            />
+          );
+        case 'faqAccordions':
+          return <FaqAccordions title={v.title} />;
+        case 'team':
+          return (
+            <section class="site-container mt-24 md:mt-36">
+              <h2 class="h2 text-center">{v.title ?? 'Meet the team'}</h2>
+              <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                {
+                  teamData.map((member) => (
+                    <Profile name={member.name} title={member.title} image={member.image} bio={member.bio} />
+                  ))
+                }
+              </div>
+            </section>
+          );
+      }
+    })
+  }
 </BaseLayout>

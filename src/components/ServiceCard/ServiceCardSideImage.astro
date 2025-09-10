@@ -4,7 +4,6 @@
  * Recommend using 2 or 3 cards in a row
  */
 
-import { getLocalizedRoute } from "@/js/translationUtils";
 import { Image } from "astro:assets";
 import { Icon } from "astro-icon/components";
 
@@ -12,7 +11,6 @@ import { Icon } from "astro-icon/components";
 import Button from "@components/Button/Button.astro";
 
 // utils
-import { getLocaleFromUrl } from "@js/localeUtils";
 
 interface Props {
 	title: string; // larger title
@@ -25,7 +23,7 @@ interface Props {
 
 const { image, title, href, idx, details, imageSide } = Astro.props as Props;
 
-const currLocale = getLocaleFromUrl(Astro.url);
+// use href as provided
 ---
 
 <div class="mx-auto grid gap-8 rounded-xl md:grid-cols-2 md:gap-12 lg:gap-20">
@@ -34,7 +32,7 @@ const currLocale = getLocaleFromUrl(Astro.url);
 		<h2 class="h2 mt-6">{title}</h2>
 		<p class="mt-4 opacity-80">{details}</p>
 		<div class="z-20 mt-4 flex">
-			<Button variant="ghost" href={getLocalizedRoute(currLocale, href)} arrow="right">
+			<Button variant="ghost" href={href} arrow="right">
 				Learn more <span class="sr-only">about {title}</span>
 			</Button>
 		</div>

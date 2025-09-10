@@ -12,18 +12,17 @@ import {
 // components
 import ComponentBlocks from "@components/KeystaticComponents/ComponentBlocks";
 
-// utils
-import { locales } from "@config/siteSettings.json";
+// helpers
 
 /**
  * * Blog posts collection
  * This gets used by Astro Content Collections, so if you update this, you'll need to update the Astro Content Collections schema
  */
-const Blog = (locale: (typeof locales)[number]) =>
+const Blog = () =>
 	collection({
-		label: `Blog (${locale.toUpperCase()})`,
+		label: `Blog`,
 		slugField: "title",
-		path: `src/data/blog/${locale}/*/`,
+		path: `src/data/blog/*/`,
 		columns: ["title", "pubDate"],
 		entryLayout: "content",
 		format: { contentField: "content" },
@@ -48,8 +47,7 @@ const Blog = (locale: (typeof locales)[number]) =>
 				fields.relationship({
 					label: "Post author",
 					collection: `authors`,
-					// authors field in keystatic.config.tsx must match the collection name here (like "authorsEN" or "authorsFR")
-					// collection: `authors${locale.toUpperCase()}`,
+					// authors field in keystatic.config.tsx must match the collection name here
 				}),
 				{
 					label: "Authors",
@@ -62,10 +60,7 @@ const Blog = (locale: (typeof locales)[number]) =>
 				label: "Updated Date",
 				description: "If you update this post at a later date, put that date here.",
 			}),
-			mappingKey: fields.text({
-				label: "Mapping Key",
-				description: "This is used to map entries between languages.",
-			}),
+
 			heroImage: fields.image({
 				label: "Hero Image",
 				publicPath: "../",
@@ -77,8 +72,8 @@ const Blog = (locale: (typeof locales)[number]) =>
 				itemLabel: (props) => props.value,
 				validation: { length: { min: 1 } },
 			}),
-			content: fields.mdx({
-				label: "Content",
+            content: fields.mdx({
+                label: "Content",
 				options: {
 					bold: true,
 					italic: true,
@@ -91,7 +86,7 @@ const Blog = (locale: (typeof locales)[number]) =>
 					table: true,
 					link: true,
 					image: {
-						directory: `src/data/blog/${locale}/`,
+						directory: `src/data/blog/`,
 						publicPath: "../",
 						// schema: {
 						//   title: fields.text({
@@ -104,10 +99,9 @@ const Blog = (locale: (typeof locales)[number]) =>
 					divider: true,
 					codeBlock: true,
 				},
-				components: {
-					Admonition: ComponentBlocks.Admonition,
-				},
-			}),
+                // Note: custom component blocks disabled here to avoid
+                // potential admin preview issues; can be re-enabled later.
+            }),
 		},
 	});
 
@@ -115,11 +109,11 @@ const Blog = (locale: (typeof locales)[number]) =>
  * * Authors collection
  * This gets used by Astro Content Collections, so if you update this, you'll need to update the Astro Content Collections schema
  */
-const Authors = (locale: (typeof locales)[number] | "") =>
+const Authors = () =>
 	collection({
-		label: `Authors ${locale === "" ? "" : `(${locale.toUpperCase()})`} `,
+		label: `Authors`,
 		slugField: "name",
-		path: `src/data/authors/${locale}/*/`,
+		path: `src/data/authors/*/`,
 		columns: ["name"],
 		entryLayout: "content",
 		format: { contentField: "bio" },
@@ -184,11 +178,11 @@ const Authors = (locale: (typeof locales)[number] | "") =>
  * * Services collection
  * This gets used by Astro Content Collections, so if you update this, you'll need to update the Astro Content Collections schema
  */
-const Services = (locale: (typeof locales)[number]) =>
+const Services = () =>
 	collection({
-		label: `Services (${locale.toUpperCase()})`,
+		label: `Services`,
 		slugField: "title",
-		path: `src/data/services/${locale}/*/`,
+		path: `src/data/services/*/`,
 		columns: ["title"],
 		entryLayout: "content",
 		format: { contentField: "content" },
@@ -209,10 +203,7 @@ const Services = (locale: (typeof locales)[number]) =>
 				publicPath: "../",
 				validation: { isRequired: true },
 			}),
-			mappingKey: fields.text({
-				label: "Mapping Key",
-				description: "This is used to map entries between languages.",
-			}),
+
 			draft: fields.checkbox({
 				label: "Draft",
 				description: "Set this page as draft to prevent it from being published.",
@@ -231,7 +222,7 @@ const Services = (locale: (typeof locales)[number]) =>
 					table: true,
 					link: true,
 					image: {
-						directory: `src/data/services/${locale}/`,
+						directory: `src/data/services/`,
 						publicPath: "../",
 					},
 					divider: true,
@@ -249,37 +240,114 @@ const Services = (locale: (typeof locales)[number]) =>
  * For items like legal pages, about pages, etc.
  * This gets used by Astro Content Collections, so if you update this, you'll need to update the Astro Content Collections schema
  */
-const OtherPages = (locale: (typeof locales)[number]) =>
-	collection({
-		label: `Other Pages (${locale.toUpperCase()})`,
-		slugField: "title",
-		path: `src/data/otherPages/${locale}/*/`,
-		columns: ["title"],
-		entryLayout: "content",
-		format: { contentField: "content" },
-		schema: {
-			title: fields.slug({
-				name: { label: "Title" },
-				slug: {
-					label: "SEO-friendly slug",
-					description: "Never change the slug once a file is published!",
-				},
-			}),
-			description: fields.text({
-				label: "Description",
-				validation: { isRequired: true, length: { min: 1, max: 160 } },
-			}),
-			mappingKey: fields.text({
-				label: "Mapping Key",
-				description: "This is used to map entries between languages.",
-			}),
-			draft: fields.checkbox({
-				label: "Draft",
-				description: "Set this page as draft to prevent it from being published.",
-			}),
-			content: fields.mdx({
-				label: "Page Contents",
-				options: {
+const OtherPages = () =>
+    collection({
+        label: `Other Pages`,
+        slugField: "title",
+        path: `src/data/otherPages/*/`,
+        columns: ["title"],
+        entryLayout: "content",
+        format: { contentField: "content" },
+        schema: {
+            title: fields.slug({
+                name: { label: "Title" },
+                slug: {
+                    label: "SEO-friendly slug",
+                    description: "Never change the slug once a file is published!",
+                },
+            }),
+            description: fields.text({
+                label: "Description",
+                validation: { isRequired: true, length: { min: 1, max: 160 } },
+            }),
+            // Optional hero configuration for pages like the homepage
+            hero: fields.object(
+                {
+                    heading: fields.text({ label: "Hero Heading" }),
+                    subheading: fields.text({ label: "Hero Subheading" }),
+                    ctaPrimaryText: fields.text({ label: "Primary CTA Text" }),
+                    ctaPrimaryHref: fields.url({ label: "Primary CTA Link" }),
+                    ctaSecondaryText: fields.text({ label: "Secondary CTA Text", description: "Optional" }),
+                    ctaSecondaryHref: fields.url({ label: "Secondary CTA Link", description: "Optional" }),
+                    // Add images later if needed
+                },
+                { label: "Hero" },
+            ),
+            // Block-style page builder: choose and order sections
+            builder: fields.blocks(
+                {
+                    hero: {
+                        label: "Hero",
+                        schema: fields.object(
+                            {
+                                heading: fields.text({ label: "Heading" }),
+                                subheading: fields.text({ label: "Subheading", multiline: true }),
+                                ctaPrimaryText: fields.text({ label: "Primary CTA Text" }),
+                                ctaPrimaryHref: fields.url({ label: "Primary CTA Link" }),
+                                ctaSecondaryText: fields.text({ label: "Secondary CTA Text", description: "Optional" }),
+                                ctaSecondaryHref: fields.url({ label: "Secondary CTA Link", description: "Optional" }),
+                            },
+                            { label: "Hero Settings" },
+                        ),
+                    },
+                    servicesSideImage: {
+                        label: "Services (Side Image)",
+                        schema: fields.object(
+                            {
+                                title: fields.text({ label: "Section Title" }),
+                            },
+                            { label: "Services Settings" },
+                        ),
+                    },
+                    featureCardsSmall: {
+                        label: "Feature Cards (Small)",
+                        schema: fields.object(
+                            {
+                                title: fields.text({ label: "Section Title" }),
+                            },
+                            { label: "Feature Cards Settings" },
+                        ),
+                    },
+                    testimonialsSwiper: {
+                        label: "Testimonials (Swiper)",
+                        schema: fields.empty(),
+                    },
+                    featureLightboxMarquee: {
+                        label: "Feature Lightbox Marquee",
+                        schema: fields.empty(),
+                    },
+                    ctaCardCenter: {
+                        label: "CTA Card (Center)",
+                        schema: fields.object(
+                            {
+                                heading: fields.text({ label: "Heading" }),
+                                description: fields.text({ label: "Description", multiline: true }),
+                                ctaText: fields.text({ label: "CTA Text" }),
+                                ctaHref: fields.url({ label: "CTA Link" }),
+                            },
+                            { label: "CTA Settings" },
+                        ),
+                    },
+                    faqAccordions: {
+                        label: "FAQ (Accordions)",
+                        schema: fields.object(
+                            {
+                                title: fields.text({ label: "Section Title" }),
+                            },
+                            { label: "FAQ Settings" },
+                        ),
+                    },
+                },
+                { label: "Page Builder" },
+            ),
+
+            draft: fields.checkbox({
+                label: "Draft",
+                description: "Set this page as draft to prevent it from being published.",
+            }),
+            content: fields.mdx({
+                label: "Page Contents",
+                options: {
 					bold: true,
 					italic: true,
 					strikethrough: true,
@@ -290,19 +358,19 @@ const OtherPages = (locale: (typeof locales)[number]) =>
 					unorderedList: true,
 					table: true,
 					link: true,
-					image: {
-						directory: `src/data/otherPages/${locale}/`,
-						publicPath: "../",
-					},
+                    image: {
+                        directory: `src/data/otherPages/`,
+                        publicPath: "../",
+                    },
 					divider: true,
 					codeBlock: true,
 				},
-				components: {
-					Admonition: ComponentBlocks.Admonition,
-				},
-			}),
-		},
-	});
+                // Note: custom component blocks disabled here to avoid
+                // potential admin preview issues; can be re-enabled later.
+                validation: { isRequired: false },
+            }),
+        },
+    });
 
 export default {
 	Blog,

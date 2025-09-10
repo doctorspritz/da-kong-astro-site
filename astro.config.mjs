@@ -19,15 +19,7 @@ export default defineConfig({
 	redirects: {
 		"/admin": "/keystatic",
 	},
-	// i18n configuration must match src/config/translations.json.ts
-	i18n: {
-		defaultLocale: "en",
-		locales: ["en", "fr"],
-		routing: {
-			prefixDefaultLocale: false,
-		},
-	},
-	markdown: {
+    markdown: {
 		shikiConfig: {
 			// Shiki Themes: https://github.com/shikijs/shiki/blob/main/docs/themes.md
 			theme: "dracula",
@@ -56,11 +48,25 @@ export default defineConfig({
 		}),
 	],
 
-	vite: {
-		plugins: [tailwindcss()],
-		// stop inlining short scripts to fix issues with ClientRouter
-		build: {
-			assetsInlineLimit: 0,
-		},
-	},
+    vite: {
+        plugins: [tailwindcss()],
+        resolve: {
+            // Ensure singletons across app and Keystatic UI
+            dedupe: [
+                'react',
+                'react-dom',
+                '@keystar/ui',
+                '@react-aria/utils',
+                '@react-aria/focus',
+                '@react-aria/overlays',
+                '@react-aria/interactions',
+                '@react-stately/overlays',
+                '@react-stately/utils',
+            ],
+        },
+        // stop inlining short scripts to fix issues with ClientRouter
+        build: {
+            assetsInlineLimit: 0,
+        },
+    },
 });

@@ -1,8 +1,7 @@
 # Welcome to Stellar!
 
 1. To get started, first install all necessary packages with `npm install`, then run an initial build to make sure the setup works `npm run build`.
-2. Next, you'll want to configure your site i18n setup (one language, or multiple). Simply run the command `npm run config-i18n` and follow the script instructions to get setup! For further information, see the [i18n documentation](https://cosmicthemes.com/docs/i18n/).
-3. Now you can setup the site to your liking!
+2. Now you can setup the site to your liking!
    - [Style customization](https://cosmicthemes.com/docs/styles/)
    - [Content editing](https://cosmicthemes.com/docs/content/)
    - [Animations](https://cosmicthemes.com/docs/animations/)

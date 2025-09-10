@@ -8,13 +8,17 @@ import { Icon } from "astro-icon/components";
 // components
 import TestimonialCard from "./TestimonialCard.astro";
 
-// utils
-import { getLocaleFromUrl } from "@js/localeUtils";
-import { getTranslatedData } from "@js/translationUtils";
+// expects items passed via props or default empty
 
-// data
-const currLocale = getLocaleFromUrl(Astro.url);
-const testimonialData = getTranslatedData("testimonialData", currLocale);
+interface TestimonialItem {
+  avatar?: ImageMetadata;
+  name: string;
+  title?: string;
+  testimonial: string;
+}
+
+interface Props { items?: TestimonialItem[] }
+const { items = [] } = Astro.props as Props;
 ---
 
 <section id="faq2" class="bg-base-200/50 py-20 md:my-16">
@@ -33,7 +37,7 @@ const testimonialData = getTranslatedData("testimonialData", currLocale);
 			</h2>
 		</div>
 		<div class="mx-auto mt-20 grid gap-6 gap-y-20 sm:grid-cols-2 md:grid-cols-3">
-			{testimonialData.map((testimonial) => <TestimonialCard {...testimonial} />)}
+			{items.map((testimonial) => <TestimonialCard {...testimonial} />)}
 		</div>
 	</div>
 </section>

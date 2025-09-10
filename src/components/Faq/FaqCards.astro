@@ -8,13 +8,10 @@ import { Icon } from "astro-icon/components";
 import FaqCard from "./FaqCard.astro";
 
 // utils
-import { getLocaleFromUrl } from "@js/localeUtils";
-import { getTranslatedData } from "@js/translationUtils";
+import faqData from "@/config/faqData.json";
 
 // data
 import { type FaqItem } from "@config/types/configDataTypes";
-const currLocale = getLocaleFromUrl(Astro.url);
-const faqData = getTranslatedData("faqData", currLocale);
 
 type FaqCols = FaqItem[];
 

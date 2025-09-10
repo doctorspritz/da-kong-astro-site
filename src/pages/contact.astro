@@ -6,12 +6,9 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 import ContactForm from "@components/ContactForm/ContactForm.astro";
 
 // utils
-import { getLocaleFromUrl } from "@js/localeUtils";
-import { getTranslatedData } from "@js/translationUtils";
+import siteData from "@/config/siteData.json";
 
 // data
-const currLocale = getLocaleFromUrl(Astro.url);
-const siteData = getTranslatedData("siteData", currLocale);
 ---
 
 <BaseLayout title="Contact Me" description="Get in touch! Contact information for Blogsmith.">

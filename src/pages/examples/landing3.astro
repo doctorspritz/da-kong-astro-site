@@ -12,12 +12,9 @@ import CtaBgImage from "@components/Cta/CtaBgImage.astro";
 import FaqAccordions from "@components/Faq/FaqAccordions.astro";
 
 // utils
-import { getLocaleFromUrl } from "@js/localeUtils";
-import { getTranslatedData } from "@js/translationUtils";
+import siteData from "@/config/siteData.json";
 
 // data
-const currLocale = getLocaleFromUrl(Astro.url);
-const siteData = getTranslatedData("siteData", currLocale);
 ---
 
 <BaseLayout title={siteData.title} description={siteData.description}>

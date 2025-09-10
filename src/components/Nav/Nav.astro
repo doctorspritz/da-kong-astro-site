@@ -6,16 +6,9 @@ import MegaMenuDropdownToggle from "@components/Nav/NavDropdown/MegaMenuDropdown
 import MobileNav from "@components/Nav/MobileNav/MobileNav.astro";
 import SiteLogo from "@components/SiteLogo/SiteLogo.astro";
 import Button from "@components/Button/Button.astro";
-import LanguageSelect from "@components/LanguageSelect/LanguageSelect.astro";
-
-// utils
-import { getLocaleFromUrl } from "@js/localeUtils";
-import { getTranslatedData } from "@js/translationUtils";
 
 // data
-const currLocale = getLocaleFromUrl(Astro.url);
-const navData = getTranslatedData("navData", currLocale);
-import { locales } from "@config/siteSettings.json";
+import navData from "@/config/navData.json";
 // console.log(JSON.stringify(navData, null, 2));
 ---
 
@@ -66,7 +59,7 @@ import { locales } from "@config/siteSettings.json";
 						Get Stellar!
 					</Button>
 
-					{locales.length > 1 && <LanguageSelect class="ml-2 hidden md:flex" />}
+					{/* language selector intentionally omitted */}
 
 					<!-- mobile nav menu, only load on small screens where it is visible -->
 					<div class="md:hidden">

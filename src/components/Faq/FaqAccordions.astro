@@ -7,14 +7,10 @@ import { Icon } from "astro-icon/components";
 // components
 import Accordion from "@components/Accordion/Accordion.astro";
 
-// utils
-import { getLocaleFromUrl } from "@js/localeUtils";
-import { getTranslatedData } from "@js/translationUtils";
-
 // data
+import faqData from "@/config/faqData.json";
+
 import { type FaqItem } from "@config/types/configDataTypes";
-const currLocale = getLocaleFromUrl(Astro.url);
-const faqData = getTranslatedData("faqData", currLocale);
 
 type FaqCols = FaqItem[];
 
@@ -35,21 +31,12 @@ if (remainder === 0) {
 } else {
 	console.error("Something went wrong with the FAQ data in FaqAccordions.astro");
 }
+interface Props { title?: string }
+const { title = "FAQ" } = Astro.props as Props;
 ---
 
 <section id="faq1" class="site-container my-24 md:my-36">
-	<h2 class="h2 mt-8 text-center">
-		<span class="relative whitespace-nowrap">
-			FAQ
-			<span>
-				<Icon
-					name="stellar/freehand-zig-underline"
-					class="text-primary-500 absolute top-0 left-0 -z-10 h-full w-full translate-y-1/2"
-					aria-hidden="true"
-				/>
-			</span>
-		</span>
-	</h2>
+    <h2 class="h2 mt-8 text-center">{title}</h2>
 	<div class="mx-auto mt-16 grid gap-x-10 gap-y-3 lg:grid-cols-2">
 		{
 			faqCols.map((faqCol) => (

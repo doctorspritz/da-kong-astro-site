@@ -1,0 +1,28 @@
+---
+import { type CollectionEntry, getCollection, render } from "astro:content";
+
+import BaseLayout from "@layouts/BaseLayout.astro";
+import ExternalLink from "@components/MarkdownComponents/ExternalLink.astro";
+
+// Fetch the privacy policy entry from content collections
+const items: CollectionEntry<"otherPages">[] = await getCollection("otherPages");
+const entry = items.find((p) => p.id === "privacy-policy" || p.id.endsWith("/privacy-policy"));
+if (!entry) {
+  throw new Error("Privacy Policy content not found");
+}
+const { Content } = await render(entry);
+const { title, description } = entry.data;
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="site-container pt-24 md:pt-36">
+    <div class="bg-base-200/50 w-full rounded-xl py-20 text-center md:py-32">
+      <h1 class="h1">{title}</h1>
+    </div>
+    <div class="mx-auto max-w-3xl">
+      <div class="text-base-content markdown-content mt-10 max-w-none text-sm md:text-base">
+        <Content components={{ a: ExternalLink }} />
+      </div>
+    </div>
+  </section>
+</BaseLayout>

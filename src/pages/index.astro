@@ -1,9 +1,10 @@
 ---
 // layout
 import BaseLayout from "@layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
 
 // components
-import Hero from "@components/Hero/HeroSideImage.astro";
+import Hero from "@components/Hero/HeroBgImage.astro";
 import FeatureCardsSmall from "@components/Feature/FeatureCardsSmall.astro";
 import ServicesSideImage from "@components/Services/ServicesSideImage.astro";
 import TestimonialsSwiper from "@components/Testimonials/TestimonialsSwiper.astro";
@@ -12,21 +13,126 @@ import FeatureLightboxMarquee from "@components/Feature/FeatureLightboxMarquee.a
 import CtaCardCenter from "@components/Cta/CtaCardCenter.astro";
 import FaqAccordions from "@components/Faq/FaqAccordions.astro";
 
-// utils
-import { getLocaleFromUrl } from "@js/localeUtils";
-import { getTranslatedData } from "@js/translationUtils";
+// Site data
+const siteTitle = "Da Kong Manufacturing - Private-Label Educational & Toy Manufacturing";
+const siteDescription = "Transform your educational and toy brand ideas into reality with our comprehensive private-label manufacturing services. From concept to completion, we deliver high-quality products.";
 
-// data
-const currLocale = getLocaleFromUrl(Astro.url);
-const siteData = getTranslatedData("siteData", currLocale);
+// Load page builder from content (Home singleton points to same file)
+const otherPages = await getCollection("otherPages");
+// Support either `home` or `home/index` ID shapes
+const homePage = otherPages.find(
+  (p) => p.id === "home" || p.id.endsWith("/home") || p.id.endsWith("/home/index")
+);
+
+const builder = (homePage?.data as any)?.builder as
+  | {
+      discriminant:
+        | 'hero'
+        | 'servicesSideImage'
+        | 'featureCardsSmall'
+        | 'testimonialsSwiper'
+        | 'featureLightboxMarquee'
+        | 'ctaCardCenter'
+        | 'faqAccordions';
+      value?: any;
+    }[]
+  | undefined;
+
+// Precompute any async data needed by blocks (e.g., services)
+const allServices = await getCollection('services');
+const allTestimonials = await getCollection('testimonials');
+const preparedBlocks = (builder ?? []).map((b) => {
+  const v = (b as any).value || {};
+  if (b.discriminant === 'servicesSideImage') {
+    const selected = Array.isArray(v.services) ? v.services : [];
+    const items = selected
+      .map((card: any) => {
+        const slug = typeof card === 'string' ? card : (card?.service as string);
+        const svc = allServices.find((s) => s.id === slug || s.id.endsWith(`/${slug}`));
+        if (!svc) return null;
+        const baseSlug = (svc as any).id.split('/').pop();
+        return {
+          title: (card as any).titleOverride || (svc as any).data.title,
+          details: (card as any).descriptionOverride || (svc as any).data.description,
+          image: (card as any).imageOverride || (svc as any).data.image,
+          href: (card as any).hrefOverride || `/services/${baseSlug}/`,
+        };
+      })
+      .filter(Boolean) as Array<{ title: string; details: string; image: any; href: string }>
+    return { kind: 'servicesSideImage' as const, v, items };
+  }
+  if (b.discriminant === 'testimonials') {
+    const items = Array.isArray(v.items) ? v.items : [];
+    const mapped = items
+      .map((card: any) => {
+        const slug = typeof card === 'string' ? card : (card?.testimonial as string);
+        const t = allTestimonials.find((x) => x.id === slug || x.id.endsWith(`/${slug}`));
+        if (!t) return null;
+        return {
+          name: card.nameOverride || (t as any).data.name,
+          title: card.titleOverride || (t as any).data.title,
+          testimonial: card.quoteOverride || (t as any).data.quote,
+          avatar: card.imageOverride || (t as any).data.image,
+        };
+      })
+      .filter(Boolean) as Array<{ name: string; title?: string; testimonial: string; avatar?: any }>;
+    return { kind: 'testimonials' as const, v, items: mapped };
+  }
+  return { kind: b.discriminant as typeof b.discriminant, v } as const;
+});
 ---
 
-<BaseLayout title={siteData.title} description={siteData.description}>
-	<Hero />
-	<ServicesSideImage />
-	<FeatureCardsSmall />
-	<TestimonialsSwiper />
-	<FeatureLightboxMarquee />
-	<CtaCardCenter />
-	<FaqAccordions />
+<BaseLayout title={siteTitle} description={siteDescription}>
+    {
+      (
+        preparedBlocks.length
+          ? preparedBlocks.map((b) => {
+              const kind = b.kind;
+              const v = (b as any).v || {};
+              switch (kind) {
+                case 'hero':
+                  return (
+                    <Hero
+                      heading={v.heading}
+                      subheading={v.subheading}
+                      ctaPrimaryText={v.ctaPrimaryText}
+                      ctaPrimaryHref={v.ctaPrimaryHref}
+                      ctaSecondaryText={v.ctaSecondaryText}
+                      ctaSecondaryHref={v.ctaSecondaryHref}
+                    />
+                  );
+                case 'servicesSideImage':
+                  return <ServicesSideImage title={v.title} items={(b as any).items} />;
+                case 'featureCardsSmall':
+                  return <FeatureCardsSmall title={v.title} items={v.items} />;
+                case 'testimonialsSwiper':
+                  return <TestimonialsSwiper />;
+                case 'testimonials':
+                  return <TestimonialsSwiper title={v.title} items={(b as any).items} />;
+                case 'featureLightboxMarquee':
+                  return <FeatureLightboxMarquee />;
+                case 'ctaCardCenter':
+                  return (
+                    <CtaCardCenter
+                      heading={v.heading}
+                      description={v.description}
+                      ctaText={v.ctaText}
+                      ctaHref={v.ctaHref}
+                    />
+                  );
+                case 'faqAccordions':
+                  return <FaqAccordions title={v.title} />;
+              }
+            })
+          : [
+              <Hero />,
+              <ServicesSideImage />,
+              <FeatureCardsSmall />,
+              <TestimonialsSwiper />,
+              <FeatureLightboxMarquee />,
+              <CtaCardCenter />,
+              <FaqAccordions />,
+            ]
+      )
+    }
 </BaseLayout>

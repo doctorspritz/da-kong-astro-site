@@ -3,23 +3,34 @@
  * * Hero with background image
  * You'll want a mobile image, and a desktop image for this.
  */
-import { getLocalizedRoute } from "@/js/translationUtils";
 import { Icon } from "astro-icon/components";
 import { Image } from "astro:assets";
 
 // components
 import Button from "@components/Button/Button.astro";
 
-// utils
-import { getLocaleFromUrl } from "@js/localeUtils";
-import { useTranslations } from "@js/translationUtils";
-
 // images
 import heroImage from "@assets/images/happy-family-crop2.png";
 import heroImageMobile from "@assets/images/happy-family-crop-mobile2.png";
 
-const currLocale = getLocaleFromUrl(Astro.url);
-const t = useTranslations(currLocale);
+interface Props {
+  heading?: string;
+  subheading?: string;
+  ctaPrimaryText?: string;
+  ctaPrimaryHref?: string;
+  ctaSecondaryText?: string;
+  ctaSecondaryHref?: string;
+}
+
+const {
+  heading = "Private-Label Manufacturing for Educational & Toy Brands.",
+  subheading = "Transform your educational and toy brand ideas into reality with our comprehensive private-label manufacturing services. From concept to completion, we deliver high-quality products that meet your exact specifications.",
+  ctaPrimaryText = "Get a quote",
+  ctaPrimaryHref = "/contact",
+  ctaSecondaryText,
+  ctaSecondaryHref,
+} = Astro.props as Props;
+
 ---
 
 <section id="hero" class="relative mb-14 flex min-h-[60svh] w-full md:pb-22">
@@ -52,47 +63,39 @@ const t = useTranslations(currLocale);
 	<!-- hero items -->
 	<div class="site-container w-full gap-10 pt-36 pb-24 md:pt-44 md:pb-36">
 		<!-- Hero text -->
-		<div class="mr-auto max-w-[450px]">
-			<h1
-				class="text-4xl leading-tight font-medium sm:text-5xl md:leading-tight"
-				data-aos="fade-up"
-			>
-				Quality work you deserve from the people you
-				<span class="relative whitespace-nowrap">
-					trust.
-					<span>
-						<Icon
-							name="stellar/freehand-zig-underline"
-							class="text-primary-400 absolute top-0 left-0 -z-10 h-full w-full translate-y-1/2"
-							aria-hidden="true"
-						/>
-					</span>
-				</span>
-			</h1>
-			<p class="description mt-6" data-aos="fade-up" data-aos-delay=".2">
-				{t("hero_description")}
-			</p>
-			<div class="mt-6 flex flex-wrap gap-4">
-				<Button
-					variant="primary"
-					href={getLocalizedRoute(currLocale, "/contact")}
-					data-aos="fade-up"
-					data-aos-delay=".9"
-				>
-					Get a FREE quote
-				</Button>
-				<Button
-					variant="outline"
-					href="https://cosmicthemes.com/themes/stellar/"
-					target="_blank"
-					class=""
-					rel="noopener noreferrer"
-					data-aos="fade-up"
-					data-aos-delay="1.1"
-				>
-					Get Stellar
-				</Button>
-			</div>
-		</div>
-	</div>
+		<div class="mx-auto max-w-[800px] text-center">
+            <h1
+                class="text-4xl leading-tight font-medium sm:text-5xl md:leading-tight"
+                data-aos="fade-up"
+            >
+                {heading}
+            </h1>
+            <p class="description mt-6" data-aos="fade-up" data-aos-delay=".2">
+                {subheading}
+            </p>
+            <div class="mt-6 flex flex-wrap justify-center gap-4">
+                <Button
+                    variant="primary"
+                    href={ctaPrimaryHref}
+                    data-aos="fade-up"
+                    data-aos-delay=".9"
+                >
+                    {ctaPrimaryText}
+                </Button>
+                {ctaSecondaryText && ctaSecondaryHref && (
+                  <Button
+                      variant="outline"
+                      href={ctaSecondaryHref}
+                      target="_blank"
+                      class=""
+                      rel="noopener noreferrer"
+                      data-aos="fade-up"
+                      data-aos-delay="1.1"
+                  >
+                      {ctaSecondaryText}
+                  </Button>
+                )}
+            </div>
+        </div>
+    </div>
 </section>

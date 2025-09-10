@@ -14,13 +14,13 @@ import { Icon } from "astro-icon/components";
 import FeatureCard from "@components/FeatureCard/FeatureCardSmall.astro";
 
 interface FeatureData {
-	icon: string;
-	title: string;
-	text: string;
+    icon: string;
+    title: string;
+    text: string;
 }
 
-// data
-const featureData: FeatureData[] = [
+// defaults
+const defaultFeatureData: FeatureData[] = [
 	{
 		icon: "tabler/paint",
 		title: "Professional quality",
@@ -58,20 +58,17 @@ const featureData: FeatureData[] = [
       beautiful spaces. We create stunning results that leave our clients thrilled.`,
 	},
 ];
+
+interface Props { title?: string; items?: FeatureData[] }
+const { title = "Our committment to you", items } = Astro.props as Props;
+const featureData: FeatureData[] = items && items.length ? items : defaultFeatureData;
 ---
 
 <section id="feature-cards-small" class="py-12 md:my-12">
 	<div class="site-container relative">
 		<div class="mx-auto mb-10 flex max-w-lg justify-center">
 			<h2 class="h2 text-center">
-				Our <span class="relative whitespace-nowrap">
-					committment
-					<Icon
-						name="stellar/freehand-circle-multi-loop"
-						class="text-primary-200 absolute inset-0 -z-10 w-full translate-y-1 scale-x-350 scale-y-150"
-						aria-hidden="true"
-					/>
-				</span> to you
+				{title}
 			</h2>
 		</div>
 		<div id="trigger-small-cards" class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
